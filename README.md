@@ -5,6 +5,8 @@ running a web crawl with the Python web crawler Scrapy. WarcMiddleware is a
 DownloaderMiddleware for Scrapy that saves a web crawl to a Web ARChive (WARC)
 file (ISO 28500).
 
+Prerequisites
+=============
 WarcMiddleware requires:
 
 * [Scrapy](http://scrapy.org/)
@@ -18,8 +20,18 @@ WarcMiddleware requires:
 For Windows, many of these packages can be downloaded from
 <http://www.lfd.uci.edu/~gohlke/pythonlibs/>.
 
-Installation
-============
+Example project
+===============
+The entire github directory serves as an example project which will download
+a website and save it as a WARC file. To try it, download the repository as a
+zip file and extract it. After installing the prerequisites listed above, run:
+
+    $ scrapy crawl simplespider
+
+Scrapy will then save the website into a file named out.warc.
+
+Usage in other Scrapy projects
+==============================
 A Scrapy project is needed to use WarcMiddleware. To create one, from a command
 prompt run:
 
