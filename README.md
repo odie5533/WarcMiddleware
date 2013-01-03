@@ -48,7 +48,9 @@ In the inner dir, open settings.py and add the following lines to the bottom:
     IMAGES_STORE = './images'
 
 This will enable the WarcMiddleware and enable image downloading. Additionally,
-create a simple spider by copying the simplespider.py file into the spiders dir.
+create a simple spider by copying the
+[simplespider.py](https://github.com/iramari/WarcMiddleware/blob/master/crawltest/spiders/simplespider.py)
+file into the spiders dir.
 Finally, to start the spider, from a command prompt in the outer dir run:
 
     $ scrapy crawl simplespider

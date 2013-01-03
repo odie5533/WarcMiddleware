@@ -1,8 +1,9 @@
 import hashlib, uuid, base64
 import datetime
 
-from hanzo.warctools import WarcRecord, warc
+from hanzo.warctools import WarcRecord
 
+# Adds a new method called make_warc_uuid to the WarcRecord class
 @staticmethod
 def make_warc_uuid(text=None):
     if text is None:
@@ -10,6 +11,7 @@ def make_warc_uuid(text=None):
     return "<urn:uuid:%s>"%uuid.UUID(hashlib.sha1(text).hexdigest()[0:32])
 WarcRecord.make_warc_uuid = make_warc_uuid
 
+# Overrides the block_digest method in WarcRecord to output base32 sha1
 def block_digest(self, content_buffer):
     hash = base64.b32encode(hashlib.sha1(content_buffer).digest())
     return "sha1:%s" % hash
@@ -104,6 +106,11 @@ class WarcinfoFields:
         for i in ['application/warc-fields', str(self)]:
             yield i
 
+"""
+Handles warcinfo records. These are the header at the top of a WARC file and
+they often include application/warc-fields content in the block.
+
+"""
 class WarcinfoRecord(WarcRecord):
     def __init__(self, id=None, date=None, filename=None, content=None,
                  headers=None, defaults=True):
@@ -125,14 +132,11 @@ class WarcinfoRecord(WarcRecord):
 
         # content is expected to behave like a tuple
         # (iterable and valid in truth testing)
-        if not content:
+        # WarcinfoFields uses magic functions to imitate a tuple
+        if not content and defaults:
             content = WarcinfoFields(defaults=defaults)
         super(WarcinfoRecord, self).__init__(headers=headers, content=content)
-        
-    def add_field(self, key, value):
-        self._warcinfo_fields
-        content = ('application/warc-fields', str(self._warcinfo_fields))
-        
+
 class WarcRequestRecord(WarcRecord):
     def __init__(self, id=None, date=None, url=None, block=None,
                  concurrent_to=None, headers=None, defaults=True):
