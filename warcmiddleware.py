@@ -1,15 +1,16 @@
-from urlparse import urlparse, urlunparse, urldefrag
+import urlparse
 from cStringIO import StringIO
 
-import scrapy
-from scrapy.http import Headers
+import scrapy.http
+import twisted.web.http
 from scrapy.utils.httpobj import urlparse_cached
-from twisted.web.http import HTTPClient
-from warcrecords import WarcinfoRecord, WarcRequestRecord, WarcResponseRecord
-        
+
+import warcrecords
+
 # from scrapy/core/downloader/webclient.py
 def _parsed_url_args(parsed):
-    path = urlunparse(('', '', parsed.path or '/', parsed.params, parsed.query, ''))
+    path = urlparse.urlunparse(('', '', parsed.path or '/', parsed.params,
+                                parsed.query, ''))
     host = parsed.hostname
     port = parsed.port
     scheme = parsed.scheme
@@ -19,11 +20,15 @@ def _parsed_url_args(parsed):
     return scheme, netloc, host, port, path
 
 class WarcMiddleware(object):
+    """
+    Open the WARC file for output and write the warcinfo header record
+    
+    """
     def __init__(self):
         self.fo = open('out.warc', 'wb')
-        record = WarcinfoRecord()
+        record = warcrecords.WarcinfoRecord()
         record.write_to(self.fo)
-    
+
     """
     Converts a Scrapy request to a WarcRequestRecord
     Simulates a fake HTTP Client to recreate the request
@@ -31,9 +36,9 @@ class WarcMiddleware(object):
     
     """
     def warcrec_from_scrapy_request(self, request):
-        headers = Headers(request.headers)
+        headers = scrapy.http.Headers(request.headers)
         body = request.body
-        
+
         parsed = urlparse_cached(request)
         scheme, netloc, host, port, path = _parsed_url_args(parsed)
 
@@ -45,9 +50,9 @@ class WarcMiddleware(object):
             headers['Content-Length'] = len(body)
             # just in case a broken http/1.1 decides to keep connection alive
             headers.setdefault("Connection", "close")
-    
+
         string_transport = StringIO()
-        fakeclient = HTTPClient()
+        fakeclient = twisted.web.http.HTTPClient()
         fakeclient.transport = string_transport
         fakeclient.sendCommand(request.method, path)
         for key, values in headers.items():
@@ -57,26 +62,31 @@ class WarcMiddleware(object):
         # Body
         if body is not None:
             string_transport.write(body)
-        
+
         request_str = string_transport.getvalue()
-        return WarcRequestRecord(url=request.url, block=request_str)
+        return warcrecords.WarcRequestRecord(url=request.url, block=request_str)
+
+    """
+    Converts a Scrapy response to a WarcResponseRecord
+    
+    tofix: Handle response.status codes
+    
+    """
+    def warcrec_from_scrapy_response(self, response):
+        # Everything is OK.
+        resp_str = "HTTP/1.0 " + str(response.status) + " OK\r\n"
+        resp_str += response.headers.to_string()
+        resp_str += "\r\n\r\n"
+        resp_str += response.body
+        resp_str += "\r\n\r\n"
+
+        return warcrecords.WarcResponseRecord(url=response.url, block=resp_str)
 
     def process_request(self, request, spider):
         record = self.warcrec_from_scrapy_request(request)
         record.write_to(self.fo)
-        
-    def process_response(self, request, response, spider):
-        # Everything is OK.
-        response_str = "HTTP/1.0 " + str(response.status) + " OK\r\n"
-        response_str += response.headers.to_string()
-        response_str += "\r\n\r\n"
-        response_str += response.body
-        response_str += "\r\n\r\n"
-                
-        record = WarcResponseRecord(url=response.url, block=response_str)
-        record.write_to(self.fo)
-        return response
 
-if __name__ == '__main__':
-    # Short test only detects major errors
-    print 'test'
+    def process_response(self, request, response, spider):
+        record = self.warcrec_from_scrapy_response(response)
+        record.write_to(self.fo)
+        return response # return the response to Scrapy for further handling
