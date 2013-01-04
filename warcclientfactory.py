@@ -27,18 +27,32 @@ class WarcOutputSingleton(object):
 
 class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
     def __init__(self, *args, **kwargs):
-        self.header_buffer = StringIO()
+        self.block_buffer = StringIO()
+        self._warcout = WarcOutputSingleton().get_handle()
     
     def lineReceived(self, line):
-        self.header_buffer.write(line.rstrip() + '\r\n')
+        # line is missing \n, so strip off the \r and add both back
+        self.block_buffer.write(line.rstrip() + '\r\n')
         return ScrapyHTTPPageGetter.lineReceived(self, line.rstrip())
         
-    def handleEndHeaders(self):
-        self.factory.gotHeaderString(self.header_buffer.getvalue())
-        self.factory.gotHeaders(self.headers)
+    # Called after the entire raw response is received
+    def handleResponse(self, response):
+        self.block_buffer.write(response)
+        self.block_buffer.write('\r\n\r\n')
+        
+        block_string = self.block_buffer.getvalue()
+        record = warcrecords.WarcResponseRecord(url=self.factory.url, block=block_string)
+        record.write_to(self._warcout)
+        
+        ScrapyHTTPPageGetter.handleResponse(self, response)
     
-    """ Handles entire Request saving """
+    """
+    Handles entire Request saving
+    
+    """
     def connectionMade(self):
+        # Create a fake_transport. Let ScrapyHTTPPageGetter make its request.
+        # Then save the request as a WARC record and send it off
         real_transport = self.transport
         fake_transport = StringIO()
         self.transport = fake_transport
@@ -49,27 +63,10 @@ class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
         send_string = fake_transport.getvalue()
         real_transport.write(send_string)
         
-        warcout = WarcOutputSingleton().get_handle()
         record = warcrecords.WarcRequestRecord(url=self.factory.url, block=send_string)
-        record.write_to(warcout)
+        record.write_to(self._warcout)
 
 class WarcHTTPClientFactory(ScrapyHTTPClientFactory):
-    def gotHeaderString(self, header_string):
-        self.block_buffer.write(header_string)
-
-    def page(self, response):
-        self.block_buffer.write(response)
-        self.block_buffer.write('\r\n\r\n')
-        block_string = self.block_buffer.getvalue()
-        record = warcrecords.WarcResponseRecord(url=self.url, block=block_string)
-        record.write_to(self._warcout)
-    
-        ScrapyHTTPClientFactory.page(self, response)
-
     def __init__(self, *args, **kwargs):
-        self.protocol = WarcHTTPPageGetter
-        
-        self._warcout = WarcOutputSingleton().get_handle()
-        self.block_buffer = StringIO()
-        
+        self.protocol = WarcHTTPPageGetter        
         ScrapyHTTPClientFactory.__init__(self, *args, **kwargs)
