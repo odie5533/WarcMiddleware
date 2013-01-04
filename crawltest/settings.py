@@ -14,6 +14,7 @@ NEWSPIDER_MODULE = 'crawltest.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'crawltest (+http://www.yourdomain.com)'
 
-DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 543}
+#DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 543}
+DOWNLOADER_HTTPCLIENTFACTORY = 'warcclientfactory.WarcHTTPClientFactory'
 ITEM_PIPELINES = ['scrapy.contrib.pipeline.images.ImagesPipeline']
 IMAGES_STORE = './images'
