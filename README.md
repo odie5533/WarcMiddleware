@@ -75,11 +75,9 @@ crawltest dir. Also copy over the hanzo dir to the outer dir.
 In the inner dir, open settings.py and add the following lines to the bottom:
 
     DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 543}
-    ITEM_PIPELINES = ['scrapy.contrib.pipeline.images.ImagesPipeline']
-    IMAGES_STORE = './images'
 
-This will enable the WarcMiddleware and enable image downloading. Additionally,
-create a simple spider by copying the
+This will enable the WarcMiddleware. Additionally, create a simple spider by
+copying the
 [simplespider.py](https://github.com/iramari/WarcMiddleware/blob/master/crawltest/spiders/simplespider.py)
 file into the spiders dir.
 
