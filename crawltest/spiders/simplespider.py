@@ -29,6 +29,7 @@ class SimpleSpider(BaseSpider):
             abs_url = urlparse.urljoin(response.url, rel_url)
             yield Request(abs_url, callback=lambda _: None)
 
+    # Parses HTML pages for images, CSS, and javascript
     def parse(self, response):
         # Get favicon
         yield Request(urlparse.urljoin(response.url, "/favicon.ico"),

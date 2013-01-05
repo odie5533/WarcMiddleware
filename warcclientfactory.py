@@ -4,6 +4,10 @@ from scrapy.core.downloader.webclient import ScrapyHTTPPageGetter, ScrapyHTTPCli
 
 import warcrecords
 
+"""
+Singleton that handles maintaining a single output file for many connections
+
+"""
 class WarcOutputSingleton(object):
     _instance = None
 
@@ -25,6 +29,10 @@ class WarcOutputSingleton(object):
     def get_handle(self):
         return self.__fo
 
+"""
+Twisted Protocol class that writes the request and response to a WARC file
+
+"""
 class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
     def __init__(self, *args, **kwargs):
         self.block_buffer = StringIO()
@@ -66,7 +74,11 @@ class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
         record = warcrecords.WarcRequestRecord(url=self.factory.url, block=send_string)
         record.write_to(self._warcout)
 
+"""
+Used to override the factory's protocol to WarcHTTPPageGetter
+
+"""
 class WarcHTTPClientFactory(ScrapyHTTPClientFactory):
     def __init__(self, *args, **kwargs):
-        self.protocol = WarcHTTPPageGetter        
+        self.protocol = WarcHTTPPageGetter
         ScrapyHTTPClientFactory.__init__(self, *args, **kwargs)

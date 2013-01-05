@@ -1,9 +1,15 @@
 WarcMiddleware
 ==============
-WarcMiddleware lets users seamlessly download a mirror copy of a website when
-running a web crawl with the Python web crawler Scrapy. WarcMiddleware is a
-DownloaderMiddleware for Scrapy that saves a web crawl to a Web ARChive (WARC)
-file (ISO 28500).
+WarcMiddleware is an addon for the Python web crwaler Scrapy that saves a mirror
+of a website to a Web ARChive (WARC) file (ISO 28500).
+
+There are two ways to use WarcMiddleware: (1) as a replacement ClientFactory or
+(2) as a DownloaderMiddleware. The former is recommended. As a ClientFactory,
+WarcMiddleware hooks into Scrapy's HTTP class and saves the raw requests and
+responses. The DownloaderMiddleware version configures itself to save the
+requests and responses that Scrapy sends it. The problem with this method is
+that Scrapy does not pass along the raw data and some of it is lost along the
+way.
 
 Prerequisites
 =============
@@ -38,6 +44,31 @@ prompt run:
     $ scrapy startproject crawltest
 
 This will create a crawltest directory (dir) with another crawltest dir inside.
+
+After this, choose one of the following methods to use WarcMiddleware.
+
+WarcClientFactory
+-----------------
+Copy warcclientfactory.py and warcrecords.py next to scrapy.cfg in the outer
+crawltest dir. Also copy over the hanzo dir to the outer dir.
+
+In the inner dir, open settings.py and add the following lines to the bottom:
+
+    DOWNLOADER_HTTPCLIENTFACTORY = 'warcclientfactory.WarcHTTPClientFactory'
+
+This will enable the custom WarcMiddleware ClientFactory. Additionally, create
+a simple spider by copying the 
+[simplespider.py](https://github.com/iramari/WarcMiddleware/blob/master/crawltest/spiders/simplespider.py)
+file into the spiders dir.
+
+Finally, to start the spider, from a command prompt in the outer dir run:
+
+    $ scrapy crawl simplespider
+
+This should output an images dir and a WARC file named out.warc.
+
+DownloaderMiddleware
+--------------------
 Copy warcmiddleware.py and warcrecords.py next to scrapy.cfg in the outer
 crawltest dir. Also copy over the hanzo dir to the outer dir.
 
@@ -51,6 +82,7 @@ This will enable the WarcMiddleware and enable image downloading. Additionally,
 create a simple spider by copying the
 [simplespider.py](https://github.com/iramari/WarcMiddleware/blob/master/crawltest/spiders/simplespider.py)
 file into the spiders dir.
+
 Finally, to start the spider, from a command prompt in the outer dir run:
 
     $ scrapy crawl simplespider
