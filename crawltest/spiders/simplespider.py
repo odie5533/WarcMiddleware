@@ -7,9 +7,9 @@ from scrapy.http import Request
 
 class SimpleSpider(BaseSpider):
     name = "simplespider"
-    start_urls = [
-       "http://www.eurogamer.net/"
-    ]
+    
+    def __init__(self, url):
+        self.start_urls = [url]
 
     def parse_css(self, response):
         matches = re.finditer('@import[^"\']*["\']([^"\']*)', response.body)
@@ -48,6 +48,4 @@ class SimpleSpider(BaseSpider):
             
         scripts = hxs.select('//script/@src').extract()
         for script in scripts:
-            if 'recaptcha_ajax.js' in script:
-                continue
             yield Request(script, callback=lambda _: None)

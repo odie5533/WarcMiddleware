@@ -46,7 +46,6 @@ class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
     # Called after the entire raw response is received
     def handleResponse(self, response):
         self.block_buffer.write(response)
-        self.block_buffer.write('\r\n\r\n')
         
         block_string = self.block_buffer.getvalue()
         record = warcrecords.WarcResponseRecord(url=self.factory.url, block=block_string)

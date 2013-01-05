@@ -1,6 +1,6 @@
 WarcMiddleware
 ==============
-WarcMiddleware is an addon for the Python web crwaler Scrapy that saves a mirror
+WarcMiddleware is an addon for the Python web crawler Scrapy that saves a mirror
 of a website to a Web ARChive (WARC) file (ISO 28500).
 
 There are two ways to use WarcMiddleware: (1) as a replacement ClientFactory or
@@ -63,7 +63,7 @@ file into the spiders dir.
 
 Finally, to start the spider, from a command prompt in the outer dir run:
 
-    $ scrapy crawl simplespider
+    $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
 This should output an images dir and a WARC file named out.warc.
 
@@ -85,6 +85,6 @@ file into the spiders dir.
 
 Finally, to start the spider, from a command prompt in the outer dir run:
 
-    $ scrapy crawl simplespider
+    $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
 This should output an images dir and a WARC file named out.warc.
