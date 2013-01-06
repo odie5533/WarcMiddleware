@@ -1,5 +1,6 @@
 import urlparse
 import re
+import xml.etree.ElementTree
 
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
@@ -7,9 +8,27 @@ from scrapy.http import Request
 
 class SimpleSpider(BaseSpider):
     name = "simplespider"
-    
-    def __init__(self, url):
-        self.start_urls = [url]
+
+    @staticmethod
+    def load_sitemap(sitemap):
+        tree = xml.etree.ElementTree.parse(sitemap)
+        root = tree.getroot()
+
+        found_urls = []
+        for url in root:
+            if not url.tag.endswith('url'): continue
+            for loc in url:
+                if not loc.tag.endswith('loc'): continue
+                found_urls.append(loc.text)
+        return found_urls
+
+    def __init__(self, url=None, sitemap=None):
+        self.start_urls = []
+        if url is not None:
+            self.start_urls.append(url)
+        if sitemap is not None:
+            urls = self.load_sitemap(sitemap)
+            self.start_urls.extend(urls)
 
     def parse_css(self, response):
         matches = re.finditer('@import[^"\']*["\']([^"\']*)', response.body)
@@ -34,18 +53,21 @@ class SimpleSpider(BaseSpider):
         # Get favicon
         yield Request(urlparse.urljoin(response.url, "/favicon.ico"),
                       callback=lambda _: None)
-        
+
         hxs = HtmlXPathSelector(response)
-        image_tags = hxs.select('//img')
-        for img in image_tags:
-            rel_url = img.select('@src').extract()[0]
+        image_tags = hxs.select('//img/@src').extract()
+        for rel_url in image_tags:
             abs_url = urlparse.urljoin(response.url, rel_url.strip())
             yield Request(abs_url, callback=lambda _: None)
 
-        links = hxs.select('//link[contains(@type,"css")]/@href').extract()
-        for link in links:
-            yield Request(link, callback=self.parse_css)
-            
+        # Parse CSS
+        css_urls = hxs.select('//link[contains(@type,"css")]/@href').extract()
+        for rel_url in css_urls:
+            abs_url = urlparse.urljoin(response.url, rel_url.strip())
+            yield Request(abs_url, callback=self.parse_css)
+
+        # Parse JavaScript
         scripts = hxs.select('//script/@src').extract()
-        for script in scripts:
-            yield Request(script, callback=lambda _: None)
+        for rel_url in scripts:
+            abs_url = urlparse.urljoin(response.url, rel_url.strip())
+            yield Request(abs_url, callback=lambda _: None)

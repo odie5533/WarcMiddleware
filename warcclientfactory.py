@@ -17,17 +17,20 @@ class WarcOutputSingleton(object):
         return cls._instance
 
     def __init__(self):
+        self.use_gzip = True
+        self.filename = "out.warc.gz"
+
         # Make sure init is not called more than once
         try:
             self.__fo
         except AttributeError:
-            self.__fo = open('out.warc', 'wb')
+            self.__fo = open(self.filename, 'wb')
             record = warcrecords.WarcinfoRecord()
-            record.write_to(self.__fo)
-    
-    """ Returns a handle to the output file """
-    def get_handle(self):
-        return self.__fo
+            record.write_to(self.__fo, gzip=self.use_gzip)
+
+    # Write a given record to the output file
+    def write_record(self, record):
+        record.write_to(self.__fo, gzip=self.use_gzip)
 
 """
 Twisted Protocol class that writes the request and response to a WARC file
@@ -36,7 +39,7 @@ Twisted Protocol class that writes the request and response to a WARC file
 class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
     def __init__(self, *args, **kwargs):
         self.block_buffer = StringIO()
-        self._warcout = WarcOutputSingleton().get_handle()
+        self._warcout = WarcOutputSingleton()
     
     def lineReceived(self, line):
         # line is missing \n, so strip off the \r and add both back
@@ -49,7 +52,7 @@ class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
         
         block_string = self.block_buffer.getvalue()
         record = warcrecords.WarcResponseRecord(url=self.factory.url, block=block_string)
-        record.write_to(self._warcout)
+        self._warcout.write_record(record)
         
         ScrapyHTTPPageGetter.handleResponse(self, response)
     
@@ -71,7 +74,7 @@ class WarcHTTPPageGetter(ScrapyHTTPPageGetter):
         real_transport.write(send_string)
         
         record = warcrecords.WarcRequestRecord(url=self.factory.url, block=send_string)
-        record.write_to(self._warcout)
+        self._warcout.write_record(record)
 
 """
 Used to override the factory's protocol to WarcHTTPPageGetter

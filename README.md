@@ -30,7 +30,7 @@ WarcMiddleware requires:
 For Windows, many of these packages can be downloaded from
 <http://www.lfd.uci.edu/~gohlke/pythonlibs/>.
 
-Example project
+Simple examples
 ===============
 The entire github repository serves as an example project which will download
 a website and save it as a WARC file. To try it, download the repository as a
@@ -38,15 +38,30 @@ zip file and extract it. After installing the prerequisites listed above, run:
 
     $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
-Scrapy will then save the website into a file named out.warc.
+Scrapy will then save the website into a file named out.warc.gz
+
+Sitemap.xml archiving
+---------------------
+The example project also supports downloading urls from a sitemap.xml file.
+As an example, this can be used to download all the posts from a blogspot site.
+To get the sitemap.xml from a blogspot site, append "sitemap.xml" to the url and
+save the file.
+
+    http://dogs.blogspot.com/sitemap.xml
+
+Then crawl the sitemap using:
+
+    $ scrapy crawl simplespider -a sitemap=sitemap.xml
+
+Scrapy will then save the website urls into a file name out.warc.gz
 
 How to view WARC files
 ======================
 After creating a WARC file, the contents can be played back allowing the user
-to view the saved web site. One way to view the saved site is to use [warc-proxy](https://github.com/alard/warc-proxy).
+to view the saved website. One way to view the saved site is to use [warc-proxy](https://github.com/alard/warc-proxy).
 Warc-proxy creates a proxy that channels traffic from a web browser and responds
-to requests to view web sites. Rather than sending the live web site, warc-proxy
-sends back the saved web site contents from the WARC file.
+to requests to view websites. Rather than sending the live website, warc-proxy
+sends back the saved website contents from the WARC file.
 
 Usage in other Scrapy projects
 ==============================
@@ -77,7 +92,7 @@ Finally, to start the spider, from a command prompt in the outer dir run:
 
     $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
-This should output a WARC file named out.warc.
+This should output a WARC file named out.warc.gz
 
 DownloaderMiddleware
 --------------------
@@ -97,4 +112,4 @@ Finally, to start the spider, from a command prompt in the outer dir run:
 
     $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
-This should output a WARC file named out.warc.
+This should output a WARC file named out.warc.gz
