@@ -14,7 +14,6 @@ class SimpleSpider(BaseSpider):
     def load_sitemap(sitemap):
         tree = xml.etree.ElementTree.parse(sitemap)
         root = tree.getroot()
-        self.regs_accept = None
 
         found_urls = []
         for url in root:
@@ -30,7 +29,6 @@ class SimpleSpider(BaseSpider):
         self.accept_netlocs = [] # By default, do not crawl links
         self.regs_accept = None
         self.regs_reject = None
-        self.mirror = False
 
         if urls is not None:
             urls = urls.split(',')

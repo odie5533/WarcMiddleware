@@ -36,24 +36,51 @@ The entire github repository serves as an example project which will download
 a website and save it as a WARC file. To try it, download the repository as a
 zip file and extract it. After installing the prerequisites listed above, run:
 
-    $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
+    $ crawler.py --url http://www.eurogamer.net/
 
-Scrapy will then save the website into a file named out.warc.gz
+Scrapy will save the website into a file named out.warc.gz
 
 Sitemap.xml archiving
 ---------------------
-The example project also supports downloading urls from a sitemap.xml file.
-As an example, this can be used to download all the posts from a blogspot site.
-To get the sitemap.xml from a blogspot site, append "sitemap.xml" to the url and
+The crawler supports downloading urls from a sitemap.xml file.
+As an example, this can be used to download all the posts from a Blogspot site.
+To get the sitemap.xml from a Blogspot site, append "sitemap.xml" to the url and
 save the file.
 
     http://dogs.blogspot.com/sitemap.xml
 
-Then crawl the sitemap using:
+Crawl the sitemap using:
 
-    $ scrapy crawl simplespider -a sitemap=sitemap.xml
+    $ crawler.py --sitemap sitemap.xml
 
-Scrapy will then save the website urls into a file name out.warc.gz
+Scrapy will save the website contents into a file name out.warc.gz
+
+Mirroring a domain
+------------------
+The crawler supports crawling an entire domain or many domains.
+
+If crawling a single domain, use:
+
+    $ crawler.py --mirror --url http://example.com
+
+Using --mirror is the same as using `--domains example.com`.
+
+For multiple domains, the following will crawl anchor links on example.com that
+lead to example.com or to othersite.com. And from othersite.com, it will crawl
+anchor links that lead to either:
+
+    $ crawler.py --domains example.com,othersite.com --url http://example.com
+
+Regular Expression crawling
+---------------------------
+The --accept and --reject parameters affect whether or not each anchor link on a
+site is crawled. Each accepts a comma-separated list of regular expressions that
+should either be crawled or never crawled. This does not affect downloading
+external assets such as images or CSS files.
+
+This example will not crawl anchor links that contains the string "/search/?":
+
+    $ crawler.py --mirror --reject /search/\? --url http://example.com
 
 How to view WARC files
 ======================

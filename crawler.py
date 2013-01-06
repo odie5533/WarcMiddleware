@@ -15,6 +15,7 @@ parser.add_argument('-x', '--reject', dest='reg_reject',
 parser.add_argument('-D', '--domains',
                     help='Crawl only anchor links on the specified domains. Overrides -a.')
 parser.add_argument('--url-file', help='File containing a list of urls to crawl.')
+parser.add_argument('--sitemap', help='File containing a sitemap to crawl.')
 args = parser.parse_args()
 
 cmds = ['scrapy', 'crawl', 'simplespider']
@@ -23,6 +24,8 @@ if args.urls is not None:
     cmds.extend(['-a', 'urls=%s' % args.urls])
 if args.url_file is not None:
     cmds.extend(['-a', 'url-file=%s' % args.url_file])
+if args.sitemap is not None:
+    cmds.extend(['-a', 'sitemap=%s' % args.sitemap])
 if args.reg_accept is not None:
     cmds.extend(['-a', 'reg_accept=%s' % args.reg_accept])
 if args.reg_reject is not None:
@@ -30,4 +33,7 @@ if args.reg_reject is not None:
 if args.mirror:
     cmds.extend(['-a', 'mirror=true'])
 
-scrapy.cmdline.execute(cmds)
+if len(cmds) == 3:
+    parser.print_help()
+else:
+    scrapy.cmdline.execute(cmds)
