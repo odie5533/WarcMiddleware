@@ -31,39 +31,33 @@ class WarcMiddleware(object):
 
     """
     Converts a Scrapy request to a WarcRequestRecord
-    Simulates a fake HTTP Client to recreate the request
     Follows most of the code from scrapy/core/downloader/webclient.py
     
     """
     def warcrec_from_scrapy_request(self, request):
-        headers = scrapy.http.Headers(request.headers)
+        headers = request.headers
         body = request.body
 
         parsed = urlparse_cached(request)
         scheme, netloc, host, port, path = _parsed_url_args(parsed)
 
-        # set Host header based on url
         headers.setdefault('Host', netloc)
 
-        # set Content-Length based len of body
-        if body is not None:
+        if body is not None and len(body) > 0:
             headers['Content-Length'] = len(body)
-            # just in case a broken http/1.1 decides to keep connection alive
             headers.setdefault("Connection", "close")
 
-        string_transport = StringIO()
-        fakeclient = twisted.web.http.HTTPClient()
-        fakeclient.transport = string_transport
-        fakeclient.sendCommand(request.method, path)
-        for key, values in headers.items():
+        # Compile the request using buf
+        buf = StringIO()
+        buf.write('%s %s HTTP/1.0\r\n' % (request.method, path))
+        for name, values in headers.items():
             for value in values:
-                fakeclient.sendHeader(key, value)
-        fakeclient.endHeaders()
-        # Body
+                buf.write('%s: %s\r\n' % (name, value))
+        buf.write('\r\n')
         if body is not None:
-            string_transport.write(body)
-
-        request_str = string_transport.getvalue()
+            buf.write(body)
+        request_str = buf.getvalue()
+        
         return warcrecords.WarcRequestRecord(url=request.url, block=request_str)
 
     """
@@ -78,7 +72,6 @@ class WarcMiddleware(object):
         resp_str += response.headers.to_string()
         resp_str += "\r\n\r\n"
         resp_str += response.body
-        resp_str += "\r\n\r\n"
 
         return warcrecords.WarcResponseRecord(url=response.url, block=resp_str)
 

@@ -32,7 +32,7 @@ The entire github directory serves as an example project which will download
 a website and save it as a WARC file. To try it, download the repository as a
 zip file and extract it. After installing the prerequisites listed above, run:
 
-    $ scrapy crawl simplespider
+    $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
 Scrapy will then save the website into a file named out.warc.
 
@@ -65,7 +65,7 @@ Finally, to start the spider, from a command prompt in the outer dir run:
 
     $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
-This should output an images dir and a WARC file named out.warc.
+This should output a WARC file named out.warc.
 
 DownloaderMiddleware
 --------------------
@@ -85,4 +85,4 @@ Finally, to start the spider, from a command prompt in the outer dir run:
 
     $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
-This should output an images dir and a WARC file named out.warc.
+This should output a WARC file named out.warc.
