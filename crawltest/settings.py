@@ -15,3 +15,6 @@ NEWSPIDER_MODULE = 'crawltest.spiders'
 #USER_AGENT = 'crawltest (+http://www.yourdomain.com)'
 
 DOWNLOADER_HTTPCLIENTFACTORY = 'warcclientfactory.WarcHTTPClientFactory'
+
+# Use priority 820 to capture the data before Scrapy modifies it
+#DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 820}

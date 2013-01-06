@@ -74,7 +74,7 @@ crawltest dir. Also copy over the hanzo dir to the outer dir.
 
 In the inner dir, open settings.py and add the following lines to the bottom:
 
-    DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 543}
+    DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 820}
 
 This will enable the WarcMiddleware. Additionally, create a simple spider by
 copying the
