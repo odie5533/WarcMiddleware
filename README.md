@@ -1,6 +1,6 @@
 WarcMiddleware
 ==============
-WarcMiddleware is library that lets users save mirror backups of websites to
+WarcMiddleware is a library that lets users save mirror backups of websites to
 their computer. It is an addon for the Python web crawler Scrapy that saves
 web server transactions (requests and responses) into a Web ARChive (WARC) file
 (ISO 28500). The transactions can then be played back or viewed, similar
