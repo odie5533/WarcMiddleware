@@ -1,7 +1,11 @@
 WarcMiddleware
 ==============
-WarcMiddleware is an addon for the Python web crawler Scrapy that saves a mirror
-of a website to a Web ARChive (WARC) file (ISO 28500).
+WarcMiddleware is library that lets users save mirror backups of websites to
+their computer. It is an addon for the Python web crawler Scrapy that saves
+web server transactions (requests and responses) into a Web ARChive (WARC) file
+(ISO 28500). The transactions can then be played back or viewed, similar
+to using Archive.org's WayBackMachine. The WARC format is a standard method of
+saving these transactions.
 
 There are two ways to use WarcMiddleware: (1) as a replacement ClientFactory or
 (2) as a DownloaderMiddleware. The former is recommended. As a ClientFactory,
@@ -28,13 +32,21 @@ For Windows, many of these packages can be downloaded from
 
 Example project
 ===============
-The entire github directory serves as an example project which will download
+The entire github repository serves as an example project which will download
 a website and save it as a WARC file. To try it, download the repository as a
 zip file and extract it. After installing the prerequisites listed above, run:
 
     $ scrapy crawl simplespider -a url=http://www.eurogamer.net/
 
 Scrapy will then save the website into a file named out.warc.
+
+How to view WARC files
+======================
+After creating a WARC file, the contents can be played back allowing the user
+to view the saved web site. One way to view the saved site is to use [warc-proxy](https://github.com/alard/warc-proxy).
+Warc-proxy creates a proxy that channels traffic from a web browser and responds
+to requests to view web sites. Rather than sending the live web site, warc-proxy
+sends back the saved web site contents from the WARC file.
 
 Usage in other Scrapy projects
 ==============================
