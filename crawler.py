@@ -23,7 +23,7 @@ cmds = ['scrapy', 'crawl', 'simplespider']
 if args.urls is not None:
     cmds.extend(['-a', 'urls=%s' % args.urls])
 if args.url_file is not None:
-    cmds.extend(['-a', 'url-file=%s' % args.url_file])
+    cmds.extend(['-a', 'url_file=%s' % args.url_file])
 if args.sitemap is not None:
     cmds.extend(['-a', 'sitemap=%s' % args.sitemap])
 if args.reg_accept is not None:

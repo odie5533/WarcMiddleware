@@ -78,7 +78,7 @@ site is crawled. Each accepts a comma-separated list of regular expressions that
 should either be crawled or never crawled. This does not affect downloading
 external assets such as images or CSS files.
 
-This example will not crawl anchor links that contains the string "/search/?":
+This example will not crawl anchor links that contain the string "/search/?":
 
     $ crawler.py --mirror --reject /search/\? --url http://example.com
 

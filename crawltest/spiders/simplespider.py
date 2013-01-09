@@ -23,8 +23,15 @@ class SimpleSpider(BaseSpider):
                 found_urls.append(loc.text)
         return found_urls
 
+    @staticmethod
+    def urls_from_file(filename):
+        f = open(filename, 'r')
+        urls = [l.strip() for l in f]
+        f.close()
+        return urls
+
     def __init__(self, urls=None, sitemap=None, mirror=None, reg_accept=None,
-                 reg_reject=None, domains=None):
+                 reg_reject=None, domains=None, url_file=None):
         self.start_urls = []
         self.accept_netlocs = [] # By default, do not crawl links
         self.regs_accept = None
@@ -36,6 +43,8 @@ class SimpleSpider(BaseSpider):
             if mirror is not None:
                 parts = urlparse.urlparse(urls[0])
                 self.accept_netlocs = [parts.netloc.lower()]
+        if url_file is not None:
+            self.start_urls.extend(self.urls_from_file(url_file))
         if sitemap is not None:
             self.log("Sitemap crawl: %s" % sitemap, log.DEBUG)
             urls = self.load_sitemap(sitemap)
