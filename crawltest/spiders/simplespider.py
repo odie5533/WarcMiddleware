@@ -40,9 +40,6 @@ class SimpleSpider(BaseSpider):
         if urls is not None:
             urls = urls.split(',')
             self.start_urls.extend(urls)
-            if mirror is not None:
-                parts = urlparse.urlparse(urls[0])
-                self.accept_netlocs = [parts.netloc.lower()]
         if url_file is not None:
             self.start_urls.extend(self.urls_from_file(url_file))
         if sitemap is not None:
@@ -52,11 +49,17 @@ class SimpleSpider(BaseSpider):
         if reg_accept is not None:
             regs = reg_accept.split(',')
             self.regs_accept = [re.compile(reg) for reg in regs]
-            self.accept_netlocs = None # ignore netlocs, go based on regexp only
-                                       # unless domains is specified to override
+            self.accept_netlocs = None
+                             # Setting accept_netlocs to None tells it to crawl
+                             # accept any domain and links based on regexp
+                             # unless domains or mirros is specified to override
         if reg_reject is not None:
             regs = reg_reject.split(',')
             self.regs_reject = [re.compile(reg) for reg in regs]
+        if mirror is not None:
+            parts = urlparse.urlparse(urls[0])
+            self.accept_netlocs = [parts.netloc.lower()]
+        # domains overrides mirror
         if domains is not None:
             domains = domains.split(',')
             self.accept_netlocs = domains

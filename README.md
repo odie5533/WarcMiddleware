@@ -71,6 +71,8 @@ anchor links that lead to either:
 
     $ crawler.py --domains example.com,othersite.com --url http://example.com
 
+Note that using `--domains` will override `--mirror`.
+
 Regular Expression crawling
 ---------------------------
 The --accept and --reject parameters affect whether or not each anchor link on a
@@ -78,9 +80,22 @@ site is crawled. Each accepts a comma-separated list of regular expressions that
 should either be crawled or never crawled. This does not affect downloading
 external assets such as images or CSS files.
 
-This example will not crawl anchor links that contain the string "/search/?":
+This example will not crawl anchor links that contain the string `/search/?`:
 
     $ crawler.py --mirror --reject /search/\? --url http://example.com
+
+Crawling urls from a file
+-------------------------
+A file containing a list of urls, one per line, can be supplied:
+
+    $ crawler.py --url-file index.txt
+
+The crawler uses these urls as though they were supplied to the --url argument.
+If no further arguments are given, the crawler will archive each url as well
+as any external assets for that url, but will not crawl any anchor links. If
+`--domains` is added, then it will crawl any anchor links matching the specified
+domains. If `--mirror` is used instead of domains, then it will only crawl
+anchor links that are on the domain of the first url in the file.
 
 How to view WARC files
 ======================
