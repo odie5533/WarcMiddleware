@@ -17,15 +17,16 @@ way.
 
 Prerequisites
 =============
+Please see INSTALL.md for full installation instructions.
+
 WarcMiddleware requires:
 
-* [Scrapy](http://scrapy.org/)
- * [Python Imaging Library](http://www.pythonware.com/products/pil/)
+* [Scrapy v0.16.3](http://scrapy.org/)
  * [lxml](http://pypi.python.org/pypi/lxml/)
- * [Twisted](http://twistedmatrix.com/trac/)
+ * [Twisted v12.2.0](http://twistedmatrix.com/trac/)
      * [zope.interface](http://pypi.python.org/pypi/zope.interface)
-     * [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html)
      * [pyOpenSSL](https://launchpad.net/pyopenssl)
+     * [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html)
 
 For Windows, many of these packages can be downloaded from
 <http://www.lfd.uci.edu/~gohlke/pythonlibs/>.
