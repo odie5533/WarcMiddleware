@@ -1,9 +1,9 @@
 import urlparse
 from cStringIO import StringIO
 
-import scrapy.http
 import twisted.web.http
 from scrapy.utils.httpobj import urlparse_cached
+import scrapy.http
 
 import warcrecords
 
@@ -34,7 +34,7 @@ class WarcMiddleware(object):
     Follows most of the code from scrapy/core/downloader/webclient.py
     
     """
-    def warcrec_from_scrapy_request(self, request):
+    def _warcrec_from_scrapy_request(self, request):
         headers = request.headers
         body = request.body
 
@@ -66,7 +66,7 @@ class WarcMiddleware(object):
     tofix: Handle response.status codes
     
     """
-    def warcrec_from_scrapy_response(self, response):
+    def _warcrec_from_scrapy_response(self, response):
         # Everything is OK.
         resp_str = "HTTP/1.0 " + str(response.status) + " OK\r\n"
         resp_str += response.headers.to_string()
@@ -76,10 +76,10 @@ class WarcMiddleware(object):
         return warcrecords.WarcResponseRecord(url=response.url, block=resp_str)
 
     def process_request(self, request, spider):
-        record = self.warcrec_from_scrapy_request(request)
+        record = self._warcrec_from_scrapy_request(request)
         record.write_to(self.fo)
 
     def process_response(self, request, response, spider):
-        record = self.warcrec_from_scrapy_response(response)
+        record = self._warcrec_from_scrapy_response(response)
         record.write_to(self.fo)
         return response # return the response to Scrapy for further handling
