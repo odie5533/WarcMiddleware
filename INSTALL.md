@@ -9,7 +9,7 @@ Setting up the virtualenv
 =========================
 If you don't already have virtualenv installed, run: `pip install virtualenv`
 
-The setup the virtual environment on Windows:
+To setup the virtual environment on Windows:
 
     virtualenv warcm_env\virt1 --no-site-packages
     cd warcm_env

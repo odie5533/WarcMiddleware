@@ -1,3 +1,9 @@
+"""
+This file overrides Scrapy's ScrapyHTTPClientFactory and ScrapyHTTPPageGetter
+See Scrapy's core/downloader/webclient.py
+"""
+
+
 from StringIO import StringIO
 
 from scrapy.core.downloader.webclient import ScrapyHTTPPageGetter, ScrapyHTTPClientFactory
