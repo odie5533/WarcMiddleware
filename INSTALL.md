@@ -16,6 +16,7 @@ The setup the virtual environment on Windows:
     virt1\Scripts\activate
 
 And on Linux:
+
     virtualenv warcm_env/virt1 --no-site-packages
     cd warcm_env
     source virt1/bin/activate
