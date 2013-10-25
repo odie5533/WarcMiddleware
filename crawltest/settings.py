@@ -14,7 +14,14 @@ NEWSPIDER_MODULE = 'crawltest.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'crawltest (+http://www.yourdomain.com)'
 
-DOWNLOADER_HTTPCLIENTFACTORY = 'warcclientfactory.WarcHTTPClientFactory'
+#DOWNLOADER_HTTPCLIENTFACTORY = 'warcclientfactory.WarcHTTPClientFactory'
+
+DOWNLOAD_HANDLERS = {
+   'http':'warchttp.WarcHTTPDownloadHandler',
+   'https':'warchttp.WarcHTTPDownloadHandler'
+}
+
+#EXTENSIONS = {'warcextension.WarcExtension': 800}
 
 # Use priority 820 to capture the data before Scrapy modifies it
 #DOWNLOADER_MIDDLEWARES = {'warcmiddleware.WarcMiddleware': 820}
